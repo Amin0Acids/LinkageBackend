@@ -14,4 +14,6 @@ public interface QuestionRepo extends JpaRepository<Question, Long>{
     Optional<List<Question>> findBySession(Session session);
 
     Optional<List<Question>> findByUser(User user);
+
+    Optional<List<Question>> findBySessionAndUser(Session session, User user);
 }

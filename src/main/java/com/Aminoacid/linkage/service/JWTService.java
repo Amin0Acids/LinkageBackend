@@ -47,7 +47,7 @@ public class JWTService {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    private String extractBodyUsername(String token) {
+    public String extractBodyUsername(String token) {
         String json = extractBody(token);
         String[] parts = json.split("\"");
         return parts[3];
