@@ -113,7 +113,7 @@ public class SessionService {
     public GetSessionSingleResponse getSession(String token, Long sessionId) {
         var user = jwtService.extractBodyUsername(token);
         var session = sessionRepo.findById(sessionId).orElseThrow();
-        if (!session.getOrganizer().getUsername().equals(user)) {
+        if (!session.getOrganizer().getUsername().equals(user) && sharingRepo.findBySessionAndReceiver(session, userRepo.findByUsername(user).orElseThrow()).isEmpty()) {
             throw new RuntimeException("You are not the organizer of this session");
         } else {
             return GetSessionSingleResponse.builder()
