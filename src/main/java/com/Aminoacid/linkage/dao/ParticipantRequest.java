@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class ParticipantRequest {
-    private Long sessionId;
+    private Long sessionID;
     private String participantUsername;
 }

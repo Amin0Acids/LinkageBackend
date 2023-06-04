@@ -46,7 +46,7 @@ public class SessionService {
 
     public StateResponse addParticipant(String token, ParticipantRequest request){
         var user = jwtService.extractBodyUsername(token);
-        var session = sessionRepo.findById(request.getSessionId()).orElseThrow();
+        var session = sessionRepo.findById(request.getSessionID()).orElseThrow();
         if (!session.getOrganizer().getUsername().equals(user)) {
             throw new RuntimeException("You are not the organizer of this session");
         } else {
@@ -63,7 +63,7 @@ public class SessionService {
 
     public StateResponse deleteParticipant(String token, ParticipantRequest request){
         var user = jwtService.extractBodyUsername(token);
-        var session = sessionRepo.findById(request.getSessionId()).orElseThrow();
+        var session = sessionRepo.findById(request.getSessionID()).orElseThrow();
         if (!session.getOrganizer().getUsername().equals(user)) {
             throw new RuntimeException("You are not the organizer of this session");
         } else {
