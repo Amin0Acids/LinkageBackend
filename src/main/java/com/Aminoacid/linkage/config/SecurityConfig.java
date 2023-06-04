@@ -27,7 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/user/**").permitAll()
                         .anyRequest().authenticated()
                 )
-//                .cors(cors -> cors.disable())
+                .cors(cors -> cors.configure(http))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);

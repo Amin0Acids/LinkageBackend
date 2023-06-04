@@ -1,9 +1,6 @@
 package com.Aminoacid.linkage.controller;
 
-import com.Aminoacid.linkage.dao.GetQuestionResponse;
-import com.Aminoacid.linkage.dao.ParticipantRequest;
-import com.Aminoacid.linkage.dao.SessionResponse;
-import com.Aminoacid.linkage.dao.StateResponse;
+import com.Aminoacid.linkage.dao.*;
 import com.Aminoacid.linkage.service.SessionService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +13,13 @@ public class TeacherSessionController {
     private final SessionService sessionService;
 
     @PostMapping("/session")
-    public SessionResponse createSession(@RequestHeader(name="Authorization") String token, @RequestBody String slideLink) {
-        return sessionService.createSession(token, slideLink);
+    public SessionResponse createSession(@RequestHeader(name="Authorization") String token, @RequestBody CreateSessionRequest slideLink) {
+        return sessionService.createSession(token, slideLink.getSlideLink());
     }
 
     @DeleteMapping("/session")
-    public StateResponse deleteSession(@RequestHeader(name="Authorization") String token, @RequestBody Long sessionID) {
-        return sessionService.deleteSession(token, sessionID);
+    public StateResponse deleteSession(@RequestHeader(name="Authorization") String token, @RequestBody SessionRequest sessionID) {
+        return sessionService.deleteSession(token, sessionID.getSessionID());
     }
 
     @PostMapping("/session/add")
@@ -36,12 +33,12 @@ public class TeacherSessionController {
     }
 
     @DeleteMapping("/session/question/remove/")
-    public StateResponse removeQuestion(@RequestHeader(name="Authorization") String token, @RequestBody Long questionID) {
-        return sessionService.deleteQuestion(token, questionID);
+    public StateResponse removeQuestion(@RequestHeader(name="Authorization") String token, @RequestBody RemoveQuestionRequest questionID) {
+        return sessionService.deleteQuestion(token, questionID.getQuestionID());
     }
 
     @PostMapping("/session/question")
-    public GetQuestionResponse getQuestion(@RequestHeader(name="Authorization") String token, @RequestBody Long sessionID) {
-        return sessionService.getAllSessionQuestions(token, sessionID);
+    public GetQuestionResponse getQuestion(@RequestHeader(name="Authorization") String token, @RequestBody SessionRequest sessionID) {
+        return sessionService.getAllSessionQuestions(token, sessionID.getSessionID());
     }
 }
