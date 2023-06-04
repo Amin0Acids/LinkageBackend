@@ -15,4 +15,6 @@ public interface SharingRepo extends JpaRepository<Sharing, Long> {
     Optional<List<Sharing>> findByReceiver(User receiver);
 
     Optional<Sharing> findBySessionAndReceiver(Session session, User user);
+
+    void deleteAllBySession(Session session);
 }

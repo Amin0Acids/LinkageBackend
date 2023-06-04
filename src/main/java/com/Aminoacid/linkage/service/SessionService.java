@@ -162,6 +162,8 @@ public class SessionService {
         if (!session.getOrganizer().getUsername().equals(user)) {
             throw new RuntimeException("You are not the organizer of this session");
         } else {
+            questionRepo.deleteAllBySession(session);
+            sharingRepo.deleteAllBySession(session);
             sessionRepo.delete(session);
         }
         return StateResponse.builder()

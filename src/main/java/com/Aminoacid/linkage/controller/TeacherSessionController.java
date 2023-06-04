@@ -32,9 +32,9 @@ public class TeacherSessionController {
         return sessionService.deleteParticipant(token, request);
     }
 
-    @DeleteMapping("/session/question/remove/")
-    public StateResponse removeQuestion(@RequestHeader(name="Authorization") String token, @RequestBody RemoveQuestionRequest questionID) {
-        return sessionService.deleteQuestion(token, questionID.getQuestionID());
+    @DeleteMapping("/session/question/remove")
+    public StateResponse removeQuestion(@RequestHeader(name="Authorization") String token, @RequestBody RemoveQuestionRequest request) {
+        return sessionService.deleteQuestion(token, request.getQuestionID());
     }
 
     @PostMapping("/session/question")
