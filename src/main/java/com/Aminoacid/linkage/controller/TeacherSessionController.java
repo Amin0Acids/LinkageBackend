@@ -40,7 +40,7 @@ public class TeacherSessionController {
         return sessionService.deleteQuestion(token, questionID);
     }
 
-    @GetMapping("/session/question")
+    @PostMapping("/session/question")
     public GetQuestionResponse getQuestion(@RequestHeader(name="Authorization") String token, @RequestBody Long sessionID) {
         return sessionService.getAllSessionQuestions(token, sessionID);
     }
