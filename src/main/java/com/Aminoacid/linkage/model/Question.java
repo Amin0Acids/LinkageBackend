@@ -20,4 +20,5 @@ public class Question {
     private User user;
     @ManyToOne
     private Session session;
+    private Byte page;
 }

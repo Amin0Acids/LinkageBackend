@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class QuestionRequest {
     private Long sessionId;
     private String question;
+    private Byte page;
 }

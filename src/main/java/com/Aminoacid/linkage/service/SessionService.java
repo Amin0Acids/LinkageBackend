@@ -159,11 +159,13 @@ public class SessionService {
                         .session(session)
                         .question(request.getQuestion())
                         .user(userRepo.findByUsername(user).orElseThrow())
+                        .page(request.getPage())
                         .build()
         );
         return QuestionResponse.builder()
                 .id(question.getId())
                 .question(question.getQuestion())
+                .page(question.getPage())
                 .build();
     }
 
@@ -174,18 +176,7 @@ public class SessionService {
             throw new RuntimeException("You are not the organizer of this session");
         } else {
             List<Question> questions = questionRepo.findBySession(session).orElseThrow();
-            List<QuestionResponse> questionResponses = new ArrayList<>();
-            for (Question question : questions) {
-                questionResponses.add(
-                        QuestionResponse.builder()
-                                .id(question.getId())
-                                .question(question.getQuestion())
-                                .build()
-                );
-            }
-            return GetQuestionResponse.builder()
-                    .questions(questionResponses)
-                    .build();
+            return getGetQuestionResponse(questions);
         }
     }
 
@@ -194,12 +185,17 @@ public class SessionService {
         var userObj = userRepo.findByUsername(user).orElseThrow();
         var session = sessionRepo.findById(sessionId).orElseThrow();
         List<Question> questions = questionRepo.findBySessionAndUser(session, userObj).orElseThrow();
+        return getGetQuestionResponse(questions);
+    }
+
+    private GetQuestionResponse getGetQuestionResponse(List<Question> questions) {
         List<QuestionResponse> questionResponses = new ArrayList<>();
         for (Question question : questions) {
             questionResponses.add(
                     QuestionResponse.builder()
                             .id(question.getId())
                             .question(question.getQuestion())
+                            .page(question.getPage())
                             .build()
             );
         }
@@ -211,7 +207,7 @@ public class SessionService {
     public StateResponse deleteQuestion(String token, Long questionId) {
         var user = jwtService.extractBodyUsername(token);
         var question = questionRepo.findById(questionId).orElseThrow();
-        if (!question.getUser().getUsername().equals(user)) {
+        if (!question.getUser().getUsername().equals(user)&&!question.getSession().getOrganizer().getUsername().equals(user)) {
             throw new RuntimeException("You are not the owner of this question");
         } else {
             questionRepo.delete(question);
