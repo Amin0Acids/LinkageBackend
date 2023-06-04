@@ -1,7 +1,7 @@
 package com.Aminoacid.linkage.model;
 
 public enum Roles {
-    STUDENT,
-    TEACHER,
-    ADMIN
+    Student,
+    Teacher,
+    admin
 }

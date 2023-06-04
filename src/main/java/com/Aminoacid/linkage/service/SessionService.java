@@ -28,7 +28,7 @@ public class SessionService {
     public SessionResponse createSession(String token, String slide) {
         var user = jwtService.extractBodyUsername(token);
         var organizer = userRepo.findByUsername(user).orElseThrow();
-        if (organizer.getRole() == Roles.STUDENT){
+        if (organizer.getRole() == Roles.Student){
             throw new RuntimeException("You do not have permission to create a session");
         } else {
             var session = sessionRepo.save(
