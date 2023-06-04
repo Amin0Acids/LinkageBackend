@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class QuestionRequest {
-    private Long sessionId;
+    private Long sessionID;
     private String question;
-    private Byte page;
+    private Byte slideNum;
 }

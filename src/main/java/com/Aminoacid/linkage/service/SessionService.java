@@ -2,6 +2,7 @@ package com.Aminoacid.linkage.service;
 
 import com.Aminoacid.linkage.dao.*;
 import com.Aminoacid.linkage.model.Question;
+import com.Aminoacid.linkage.model.Roles;
 import com.Aminoacid.linkage.model.Session;
 import com.Aminoacid.linkage.model.Sharing;
 import com.Aminoacid.linkage.repository.QuestionRepo;
@@ -27,16 +28,20 @@ public class SessionService {
     public SessionResponse createSession(String token, String slide) {
         var user = jwtService.extractBodyUsername(token);
         var organizer = userRepo.findByUsername(user).orElseThrow();
-        var session = sessionRepo.save(
-                Session.builder()
-                        .organizer(organizer)
-                        .slide(slide)
-                        .build()
-        );
-        return SessionResponse.builder()
-                .isSuccessful(true)
-                .id(session.getId())
-                .build();
+        if (organizer.getRole() == Roles.STUDENT){
+            throw new RuntimeException("You do not have permission to create a session");
+        } else {
+            var session = sessionRepo.save(
+                    Session.builder()
+                            .organizer(organizer)
+                            .slide(slide)
+                            .build()
+            );
+            return SessionResponse.builder()
+                    .isSuccessful(true)
+                    .id(session.getId())
+                    .build();
+        }
     }
 
     public StateResponse addParticipant(String token, ParticipantRequest request){
@@ -105,6 +110,19 @@ public class SessionService {
                 .build();
     }
 
+    public GetSessionSingleResponse getSession(String token, Long sessionId) {
+        var user = jwtService.extractBodyUsername(token);
+        var session = sessionRepo.findById(sessionId).orElseThrow();
+        if (!session.getOrganizer().getUsername().equals(user)) {
+            throw new RuntimeException("You are not the organizer of this session");
+        } else {
+            return GetSessionSingleResponse.builder()
+                    .sessionId(session.getId())
+                    .slide(session.getSlide())
+                    .build();
+        }
+    }
+
     public GetSessionResponse getAllSessions(String token) {
         var user = jwtService.extractBodyUsername(token);
         var organizer = userRepo.findByUsername(user).orElseThrow();
@@ -153,19 +171,23 @@ public class SessionService {
 
     public QuestionResponse submitQuestion(String token, QuestionRequest request) {
         var user = jwtService.extractBodyUsername(token);
-        var session = sessionRepo.findById(request.getSessionId()).orElseThrow();
+        var session = sessionRepo.findById(request.getSessionID()).orElseThrow();
+        var participant = userRepo.findByUsername(user).orElseThrow();
+        if (sharingRepo.findBySessionAndReceiver(session, participant).isEmpty()) {
+            throw new RuntimeException("You are not a participant of this session");
+        }
         var question = questionRepo.save(
                 Question.builder()
                         .session(session)
                         .question(request.getQuestion())
                         .user(userRepo.findByUsername(user).orElseThrow())
-                        .page(request.getPage())
+                        .page(request.getSlideNum())
                         .build()
         );
         return QuestionResponse.builder()
                 .id(question.getId())
                 .question(question.getQuestion())
-                .page(question.getPage())
+                .slideNum(question.getPage())
                 .build();
     }
 
@@ -195,7 +217,7 @@ public class SessionService {
                     QuestionResponse.builder()
                             .id(question.getId())
                             .question(question.getQuestion())
-                            .page(question.getPage())
+                            .slideNum(question.getPage())
                             .build()
             );
         }
@@ -208,7 +230,7 @@ public class SessionService {
         var user = jwtService.extractBodyUsername(token);
         var question = questionRepo.findById(questionId).orElseThrow();
         if (!question.getUser().getUsername().equals(user)&&!question.getSession().getOrganizer().getUsername().equals(user)) {
-            throw new RuntimeException("You are not the owner of this question");
+            throw new RuntimeException("You cannot delete this question");
         } else {
             questionRepo.delete(question);
         }
